@@ -1,0 +1,2 @@
+18:56:14.240 [main] INFO  lab7.Server.VehicleCollectionServer.VehicleCollectionServer - Server initialization
+18:56:14.267 [main] ERROR lab7.Server.VehicleCollectionServer.VehicleCollectionServer - lab7.Exceptions.InputException: Unable to read configuration file: lab7.Exceptions.InputException: parameter not found
