@@ -1,6 +1,8 @@
 package lab8.Commands;
 
 
+import lab8.Essentials.Reply;
+
 public class Exit extends Command
 {
     private static boolean runFlag = true;
@@ -28,9 +30,9 @@ public class Exit extends Command
     }
 
     @Override
-    public String execute(){
+    public Reply execute(){
         Exit.runFlag = false;
-        return "Exiting...\n";
+        return new Reply(true, "Exiting...\n");
     }
 
 }

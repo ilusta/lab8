@@ -1,4 +1,4 @@
-package lab8.Client.VehicleCollectionClient.ConnectionWindow;
+package lab8.Client.VehicleCollectionClient;
 
 import javafx.fxml.FXML;
 import javafx.scene.control.Alert;
@@ -8,7 +8,6 @@ import javafx.scene.control.TextField;
 import javafx.scene.layout.AnchorPane;
 import javafx.stage.Stage;
 import lab8.Client.VehicleCollectionClient.Resources.LocalResources;
-import lab8.Client.VehicleCollectionClient.VehicleCollectionClient;
 import lab8.Exceptions.InputException;
 
 public class ConnectionController {
@@ -36,7 +35,6 @@ public class ConnectionController {
     }
 
     public void connect(){
-        System.out.println("Try to connect");
         String input = inputField.getText();
         String[] args;
         try {
@@ -49,10 +47,9 @@ public class ConnectionController {
             stage.close();
         }
         catch (Exception e){
-            System.out.println("Error-----------------");
-            Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
-            alert.setTitle(LocalResources.rb.getString("unableToConnect")+"!");
-            alert.setContentText(e.toString());
+            Alert alert = new Alert(Alert.AlertType.ERROR);
+            alert.setTitle(LocalResources.rb.getString("error"));
+            alert.setContentText(LocalResources.rb.getString("unableToConnect")+"!\n" + e);
             alert.showAndWait();
         }
     }

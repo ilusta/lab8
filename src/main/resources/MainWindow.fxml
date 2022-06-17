@@ -40,13 +40,13 @@
                   <Menu fx:id="menuServer" mnemonicParsing="false" text="Server">
                      <items>
                         <MenuItem fx:id="menuServerConnect" mnemonicParsing="false" onAction="#connect" text="Connect" />
-                        <MenuItem fx:id="menuServerLogIn" mnemonicParsing="false" text="Log in" />
+                        <MenuItem fx:id="menuServerLogIn" mnemonicParsing="false" onAction="#login" text="Log in" />
                         <MenuItem fx:id="menuServerRegister" mnemonicParsing="false" text="Register" />
                      </items>
                   </Menu>
                   <Menu fx:id="menuCollection" mnemonicParsing="false" text="Collection">
                     <items>
-                      <MenuItem fx:id="menuCollectionInfo" mnemonicParsing="false" text="Information" />
+                      <MenuItem fx:id="menuCollectionInfo" mnemonicParsing="false" onAction="#getCollectionInformation" text="Information" />
                         <MenuItem fx:id="menuCollectionAdd" mnemonicParsing="false" text="Add Vehicle" />
                         <Menu fx:id="menuCollectionSort" mnemonicParsing="false" text="Sort">
                           <items>
@@ -54,11 +54,12 @@
                               <MenuItem fx:id="menuCollectionSortByName" mnemonicParsing="false" text="By name" />
                           </items>
                         </Menu>
+                        <MenuItem fx:id="menuCollectionSumOfWheels" mnemonicParsing="false" onAction="#getSumOfWheels" text="Sum of wheels" />
                     </items>
                   </Menu>
                   <Menu fx:id="menuHelp" mnemonicParsing="false" text="Help">
                      <items>
-                        <MenuItem fx:id="menuHelpAbout" mnemonicParsing="false" text="About" />
+                        <MenuItem fx:id="menuHelpAbout" mnemonicParsing="false" onAction="#getAppInformation" text="About" />
                      </items>
                   </Menu>
                </menus>
@@ -89,7 +90,7 @@
         <items>
             <VBox alignment="TOP_CENTER">
                <children>
-                  <TableView fx:id="vehiclesTable" editable="true" maxHeight="2000.0" maxWidth="3000.0" minHeight="200.0" minWidth="200.0" prefHeight="500.0" prefWidth="700.0" VBox.vgrow="ALWAYS">
+                  <TableView fx:id="vehiclesTable" editable="true" maxHeight="2000.0" maxWidth="3000.0" minHeight="200.0" minWidth="200.0" prefHeight="500.0" prefWidth="800.0" VBox.vgrow="ALWAYS">
                      <columns>
                         <TableColumn fx:id="idColumn" maxWidth="200.0" minWidth="20.0" prefWidth="40.0" text="ID" />
                         <TableColumn fx:id="keyColumn" maxWidth="200.0" minWidth="20.0" prefWidth="60.0" text="Key" />
@@ -101,7 +102,7 @@
                               <TableColumn fx:id="coordinatesYColumn" maxWidth="200.0" prefWidth="50.0" text="Y" />
                            </columns>
                         </TableColumn>
-                        <TableColumn fx:id="dateColumn" maxWidth="200.0" minWidth="20.0" text="Date" />
+                        <TableColumn fx:id="dateColumn" maxWidth="200.0" minWidth="20.0" prefWidth="100.0" text="Date" />
                         <TableColumn fx:id="enginePowerColumn" maxWidth="200.0" minWidth="20.0" prefWidth="50.0" text="Power" />
                         <TableColumn fx:id="numberOfWheelsColumn" maxWidth="200.0" minWidth="20.0" prefWidth="50.0" text="Number of wheels" />
                         <TableColumn fx:id="capacityColumn" maxWidth="200.0" minWidth="20.0" prefWidth="50.0" text="Capacity" />

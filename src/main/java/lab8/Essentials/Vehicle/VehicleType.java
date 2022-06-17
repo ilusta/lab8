@@ -1,4 +1,4 @@
-package lab8.Vehicle;
+package lab8.Essentials.Vehicle;
 
 import java.io.Serializable;
 

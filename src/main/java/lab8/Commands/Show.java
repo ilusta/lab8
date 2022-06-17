@@ -1,5 +1,6 @@
 package lab8.Commands;
 
+import lab8.Essentials.Reply;
 import lab8.Exceptions.CommandExecutionException;
 import lab8.Server.VehicleCollectionServer.VehicleCollection;
 
@@ -30,8 +31,8 @@ public class Show extends CollectionCommand
     }
 
     @Override
-    public String execute() throws CommandExecutionException {
-        return collection.show() + "\n";
+    public Reply execute() throws CommandExecutionException {
+        return collection.show();
     }
 
 }

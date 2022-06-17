@@ -1,10 +1,11 @@
 package lab8.Commands;
 
+import lab8.Essentials.Reply;
 import lab8.Exceptions.CommandExecutionException;
 import lab8.Exceptions.EOFInputException;
 import lab8.Exceptions.InputException;
 import lab8.Server.VehicleCollectionServer.VehicleCollection;
-import lab8.Vehicle.Vehicle;
+import lab8.Essentials.Vehicle.Vehicle;
 
 public class Update extends SecurityCollectionCommand
 {
@@ -45,7 +46,7 @@ public class Update extends SecurityCollectionCommand
     }
 
     @Override
-    public String execute() throws CommandExecutionException{
-        return collection.update(vehicle, this.getUser()) + "\n";
+    public Reply execute() throws CommandExecutionException{
+        return collection.update(vehicle, this.getUser());
     }
 }

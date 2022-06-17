@@ -19,7 +19,16 @@ public class Labels_ru extends ListResourceBundle {
             {"menuCollectionSort", "Сортировка"},
             {"menuCollectionSortByType", "По типу"},
             {"menuCollectionSortByName", "По имени"},
+            {"menuCollectionSumOfWheels", "Сумма всех колёс"},
             {"menuHelpAbout", "О приложении"},
+
+            {"aboutAppWindow", "О приложении"},
+            {"informationAboutApp", "Это приложение для операций с коллекцией транспортных средств, расположенной на удалённом сервере.\nРазработчик: ilust"},
+            {"connectToServerWindow", "Подключиться к серверу"},
+            {"logInWindow", "Войти в учётную запись"},
+            {"registerWindow", "Зарегистрироваться"},
+            {"collectionInformationWindow", "Информация о коллекции"},
+            {"sumOfWheelsWindow", "Сумма колёс в коллекции"},
 
             {"connectionStatusLabel", "Статус подключения"},
             {"collectionInfoLabel", "Информация о коллекции"},
@@ -41,11 +50,20 @@ public class Labels_ru extends ListResourceBundle {
             {"attention", "Внимание"},
             {"closeApp", "Закрыть приложение"},
 
-            {"connectToServerWindow", "Подключиться к серверу"},
             {"enterIpAndPort", "Введите IP и порт сервера"},
             {"cancelButton", "Отмена"},
             {"connectButton", "Подключиться"},
+            {"error", "Ошибка"},
             {"unableToConnect", "Не удалось подключиться, попробуйте снова"},
             {"connected", "подключен к серверу"},
-            {"notConnected", "не подключен"}};
+            {"notConnected", "не подключен"},
+            {"errorWhileReceivingCollection", "Ошибка при получении коллекции от сервера"},
+            {"connectionLost", "Соединение с сервером потеряно"},
+
+            {"user", "Пользователь"},
+            {"password", "Пароль"},
+            {"loginButton", "Войти"},
+            {"cancelButton", "Отмена"},
+            {"unableToLogIn", "Ошибка при входе"},
+            {"authorizedAs", "авторизован как"}};
 }

@@ -1,21 +1,13 @@
 package lab8.Client.VehicleCollectionClient;
 
-import java.awt.event.ActionEvent;
-import java.io.*;
-
 import javafx.scene.control.Alert;
 import javafx.scene.control.ButtonType;
 import lab8.Client.VehicleCollectionClient.Resources.LocalResources;
 import lab8.Commands.*;
-import lab8.Essentials.Request;
-import lab8.Exceptions.CommandExecutionException;
-import lab8.Exceptions.ConnectionException;
-import lab8.Exceptions.EOFInputException;
 import lab8.Commands.CommandBuilder;
-import lab8.Commands.CommandExecutor;
 import lab8.UserInput.UserInput;
+
 import java.util.ArrayList;
-import java.util.Locale;
 
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
@@ -37,6 +29,7 @@ public class VehicleCollectionClient extends Application
         Parent root = loader.load();
         AppController controller = loader.getController();
         controller.updateLabels();
+        controller.initTable();
         primaryStage.setTitle("Vehicle collection app");
         primaryStage.setScene(new Scene(root));
         primaryStage.sizeToScene();
@@ -61,26 +54,29 @@ public class VehicleCollectionClient extends Application
 
 
 
-    private static final ArrayList<Command> commandList = new ArrayList<>();
-    private static final ArrayList<Command> allCommandList = new ArrayList<>();
-
-    private String user = null;
-    private String password = null;
-
+    public static final ArrayList<Command> commandList = new ArrayList<>();
+    public static final ArrayList<Command> allCommandList = new ArrayList<>();
 
     public void run(String[] args) {
+
+        commandList.add(new Info());
+        commandList.add(new Show());
+        commandList.add(new Insert());
+        commandList.add(new Update());
+        commandList.add(new RemoveKey());
+        commandList.add(new Clear());
+        commandList.add(new SumOfNumberOfWheels());
+        commandList.add(new MaxByCoordinates());
+        commandList.add(new FilterByType());
+        commandList.add(new RemoveGreaterKey());
+        commandList.add(new RemoveLower());
+        commandList.add(new RegisterUser());
+        commandList.add(new LogIn());
 
         launch(args);
         /*
         System.out.println("Welcome to the Vehicle Collection Client!");
         UserInput.setDefaultReader(new BufferedReader(new InputStreamReader(System.in)));
-
-        commandList.add(new Help());
-        commandList.add(new Connect());
-        commandList.add(new Disconnect());
-        commandList.add(new Exit());
-        commandList.add(new History());
-        commandList.add(new ExecuteScript());
 
         Help.attachCommandList(commandList);
 
@@ -144,7 +140,7 @@ public class VehicleCollectionClient extends Application
     public static void connect(String[] args){
         try {
             ClientConnectionHandler.connect(args);
-
+/*
             System.out.println("Receiving available commands:");
             allCommandList.clear();
             allCommandList.addAll(commandList);
@@ -162,6 +158,7 @@ public class VehicleCollectionClient extends Application
             Help.attachCommandList(allCommandList);
             CommandBuilder.setCommandList(allCommandList);
             System.out.println("\t" + counter + " commands received");
+ */
         }
         catch (Exception e){
             System.out.println("\tError occurred while connecting to server: " + e);

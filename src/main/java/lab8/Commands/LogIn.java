@@ -1,5 +1,6 @@
 package lab8.Commands;
 
+import lab8.Essentials.Reply;
 import lab8.Exceptions.CommandExecutionException;
 import lab8.Exceptions.InputException;
 
@@ -33,8 +34,8 @@ public class LogIn extends SecurityCommand
     }
 
     @Override
-    public String execute() throws CommandExecutionException {
-        return "Logged in\n";
+    public Reply execute() throws CommandExecutionException {
+        return new Reply(true, "Logged in\n");
     }
 
 }

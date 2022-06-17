@@ -2,6 +2,7 @@ package lab8.Server.VehicleCollectionServer;
 
 import lab8.Commands.*;
 import lab8.Essentials.ConfigurationFileReader.ConfigurationFileReader;
+import lab8.Essentials.Reply;
 import lab8.Essentials.Request;
 import lab8.Essentials.SignedRequest;
 import lab8.Exceptions.CommandExecutionException;
@@ -132,13 +133,14 @@ public class VehicleCollectionServer {
                 //Listen for new connection
                 SocketAddress clientID = ServerConnectionHandler.acceptConnection();
                 if (clientID != null) {
-
+                /*
                     logger.info("Sending available commands to client " + clientID);
                     for (Object c : clientCommandList) {
                         ServerConnectionHandler.communicators.get(clientID).write(c);
                     }
                     ServerConnectionHandler.communicators.get(clientID).write("End");
                     logger.info("\tDone");
+                 */
                 }
 
                 ServerConnectionHandler.update();
@@ -201,11 +203,13 @@ public class VehicleCollectionServer {
                             ((SecurityCollectionCommand) command).setUser(request.getUser());
 
                         logger.info("\tExecuting command");
-                        ServerConnectionHandler.communicators.get(clientID).write(executor.execute(command));
+                        Reply reply = executor.execute(command);
+                        System.out.println(reply.toString());
+                        ServerConnectionHandler.communicators.get(clientID).write(reply);
                         logger.info("\tResponse sent to client " + clientID);
                     }
                     else {
-                        ServerConnectionHandler.communicators.get(clientID).write("Error: Not registered user\n");
+                        ServerConnectionHandler.communicators.get(clientID).write(new Reply(false, "Error: Not registered user\n"));
                         logger.info("\tUser is not registered");
                     }
                 }
@@ -217,15 +221,15 @@ public class VehicleCollectionServer {
     }
 
 
-    public static String registerUser(String user, String password) throws CommandExecutionException{
-        if(user == null || password == null) return "Username and password can not be null\n";
+    public static Reply registerUser(String user, String password) {
+        if(user == null || password == null) return new Reply(false, "Username and password can not be null\n");
 
         try (Statement statement = connection.createStatement();
             ResultSet resultSet = statement.executeQuery("SELECT username, password from users")){
 
             while (resultSet.next()) {
                 String s = resultSet.getString("username");
-                if (user.equals(s)) return "User with this name already exists\n";
+                if (user.equals(s)) return new Reply(false, "User with this name already exists\n");
             }
 
             String hash = new String(md.digest((password + pepper).getBytes(StandardCharsets.UTF_8)));
@@ -236,9 +240,9 @@ public class VehicleCollectionServer {
 
         }
         catch(Exception e){
-            throw new CommandExecutionException("Unable to register: " + e);
+            return new Reply(false, "Unable to register: " + e);
         }
-        return "User registered\n";
+        return new Reply(true, "User registered\n");
     }
 
     private boolean isUserRegistered(Request request) throws RuntimeException{

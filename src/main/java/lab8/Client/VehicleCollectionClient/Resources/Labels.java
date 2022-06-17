@@ -19,7 +19,16 @@ public class Labels extends ListResourceBundle {
             {"menuCollectionSort", "Sort"},
             {"menuCollectionSortByType", "By type"},
             {"menuCollectionSortByName", "By name"},
+            {"menuCollectionSumOfWheels", "Sum of wheels"},
             {"menuHelpAbout", "About"},
+
+            {"aboutAppWindow", "About"},
+            {"informationAboutApp", "This is client application for operations with vehicle collection based on remote server.\nDeveloped by: ilust"},
+            {"connectToServerWindow", "Connect to server"},
+            {"logInWindow", "Log in"},
+            {"registerWindow", "Register"},
+            {"collectionInformationWindow", "Information about collection"},
+            {"sumOfWheelsWindow", "Sum of wheels in collection"},
 
             {"connectionStatusLabel", "Connection status"},
             {"collectionInfoLabel", "Collection information"},
@@ -41,11 +50,20 @@ public class Labels extends ListResourceBundle {
             {"attention", "Attention"},
             {"closeApp", "Close Vehicle collection application"},
 
-            {"connectToServerWindow", "Connect to server"},
             {"enterIpAndPort", "Enter server`s IP and port"},
             {"cancelButton", "Cancel"},
             {"connectButton", "Connect"},
+            {"error", "Error"},
             {"unableToConnect", "Unable to connect, try again"},
             {"connected", "connected to server"},
-            {"notConnected", "not connected"}};
+            {"notConnected", "not connected"},
+            {"errorWhileReceivingCollection", "Error occurred while receiving collection"},
+            {"connectionLost", "Connection lost"},
+
+            {"user", "User"},
+            {"password", "Password"},
+            {"loginButton", "Log in"},
+            {"cancelButton", "Cancel"},
+            {"unableToLogIn", "Unable to log in"},
+            {"authorizedAs", "authorized as"}};
 }

@@ -1,5 +1,6 @@
 package lab8.Commands;
 
+import lab8.Essentials.Reply;
 import lab8.Exceptions.CommandExecutionException;
 import lab8.Exceptions.InputException;
 import lab8.Server.VehicleCollectionServer.VehicleCollectionServer;
@@ -34,7 +35,7 @@ public class RegisterUser extends SecurityCommand
     }
 
     @Override
-    public String execute() throws CommandExecutionException {
+    public Reply execute() throws CommandExecutionException {
         return VehicleCollectionServer.registerUser(user, password);
     }
 

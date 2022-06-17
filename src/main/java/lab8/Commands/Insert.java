@@ -1,10 +1,11 @@
 package lab8.Commands;
 
+import lab8.Essentials.Reply;
 import lab8.Exceptions.CommandExecutionException;
 import lab8.Exceptions.EOFInputException;
 import lab8.Exceptions.InputException;
 import lab8.Server.VehicleCollectionServer.VehicleCollection;
-import lab8.Vehicle.Vehicle;
+import lab8.Essentials.Vehicle.Vehicle;
 
 public class Insert extends SecurityCollectionCommand
 {
@@ -37,7 +38,7 @@ public class Insert extends SecurityCollectionCommand
     }
 
     @Override
-    public String execute() throws CommandExecutionException {
+    public Reply execute() throws CommandExecutionException {
         return collection.insert(vehicle, this.getUser());
     }
 }

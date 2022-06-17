@@ -1,5 +1,6 @@
 package lab8.Commands;
 
+import lab8.Essentials.Reply;
 import lab8.Exceptions.CommandExecutionException;
 import lab8.Exceptions.EOFInputException;
 import lab8.Exceptions.InputException;
@@ -34,11 +35,11 @@ public class Help extends Command
     }
 
     @Override
-    public String execute() throws CommandExecutionException {
+    public Reply execute() throws CommandExecutionException {
         StringBuilder message = new StringBuilder("Available commands:\n");
         for (Command c : commandList)
             message.append("\t" + c.getName() + " - " + c.getHelp() + "\n");
 
-        return message.toString();
+        return new Reply(true, message.toString());
     }
 }

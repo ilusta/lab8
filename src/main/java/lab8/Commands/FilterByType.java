@@ -1,5 +1,6 @@
 package lab8.Commands;
 
+import lab8.Essentials.Reply;
 import lab8.Exceptions.CommandExecutionException;
 import lab8.Exceptions.EOFInputException;
 import lab8.Exceptions.InputException;
@@ -34,8 +35,7 @@ public class FilterByType extends CollectionCommand
     }
 
     @Override
-    public String execute() throws CommandExecutionException {
-        String message = collection.filterByType(type) + "\n";
-        return message;
+    public Reply execute() throws CommandExecutionException {
+        return collection.filterByType(type);
     }
 }

@@ -1,5 +1,7 @@
 package lab8.Commands;
 
+import lab8.Essentials.Reply;
+
 import java.util.ArrayList;
 
 
@@ -30,7 +32,7 @@ public class History extends Command
     }
 
     @Override
-    public String execute(){
+    public Reply execute(){
         StringBuilder message = new StringBuilder();
         int x = History.commandHistory.size();
 
@@ -41,6 +43,6 @@ public class History extends Command
                 message.append(History.commandHistory.get(i)).append("\n");
             }
         }
-        return message.toString();
+        return new Reply(true, message.toString());
     }
 }

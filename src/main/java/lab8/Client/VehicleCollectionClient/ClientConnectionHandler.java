@@ -1,5 +1,6 @@
 package lab8.Client.VehicleCollectionClient;
 
+import lab8.Essentials.Reply;
 import lab8.Exceptions.CommandExecutionException;
 import lab8.Exceptions.ConnectionException;
 import lab8.Exceptions.InputException;
@@ -89,10 +90,10 @@ public class ClientConnectionHandler {
     }
 
 
-    public static Object read() throws ConnectionException{
-        Object obj = null;
+    public static Reply read() throws ConnectionException{
+        Reply r = null;
         try{
-            obj = inputStream.readObject();
+            r = (Reply) inputStream.readObject();
         }
         catch(Exception e){
             if(e instanceof IOException || e instanceof NullPointerException){
@@ -102,7 +103,7 @@ public class ClientConnectionHandler {
                 System.out.println("Error occurred while reading object from server: " + e.getMessage());
             }
         }
-        return obj;
+        return r;
     }
 
 }

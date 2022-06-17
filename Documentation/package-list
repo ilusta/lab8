@@ -2,4 +2,4 @@ lab8.Client.VehicleCollectionClient
 lab8.Commands
 lab8.Exceptions
 lab8.UserInput
-lab8.Vehicle
+lab8.Essentials.Vehicle

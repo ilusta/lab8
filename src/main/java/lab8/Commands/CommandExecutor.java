@@ -1,23 +1,23 @@
 package lab8.Commands;
 
+import lab8.Essentials.Reply;
 import lab8.Exceptions.InputException;
 
 
 public class CommandExecutor {
 
-    public String execute(Command command){
-        String message = "";
+    public Reply execute(Command command){
+        Reply reply = new Reply(false, "executor error");
         try{
             if (command == null)
                 throw new InputException("Command is NULL.");
 
-            message += command.execute();
+            reply = command.execute();
             History.add(command.getName());
         }
         catch (Exception e) {
-           message += "Error occurred while executing command: " + e.getMessage() + "\n";
+           reply = new Reply(false, e.toString());
         }
-
-        return message;
+        return reply;
     }
 }

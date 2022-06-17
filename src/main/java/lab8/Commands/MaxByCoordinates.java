@@ -1,5 +1,6 @@
 package lab8.Commands;
 
+import lab8.Essentials.Reply;
 import lab8.Exceptions.CommandExecutionException;
 import lab8.Exceptions.EOFInputException;
 import lab8.Exceptions.InputException;
@@ -31,7 +32,7 @@ public class MaxByCoordinates extends CollectionCommand
     }
 
     @Override
-    public String execute() throws CommandExecutionException {
-        return collection.maxByCoordinates() + "\n";
+    public Reply execute() throws CommandExecutionException {
+        return collection.maxByCoordinates();
     }
 }

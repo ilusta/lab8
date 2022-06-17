@@ -1,10 +1,11 @@
 package lab8.Commands;
 
+import lab8.Essentials.Reply;
 import lab8.Exceptions.CommandExecutionException;
 import lab8.Exceptions.EOFInputException;
 import lab8.Exceptions.InputException;
 import lab8.Server.VehicleCollectionServer.VehicleCollection;
-import lab8.Vehicle.Vehicle;
+import lab8.Essentials.Vehicle.Vehicle;
 
 public class RemoveLower extends SecurityCollectionCommand
 {
@@ -34,7 +35,7 @@ public class RemoveLower extends SecurityCollectionCommand
     }
 
     @Override
-    public String execute() throws CommandExecutionException {
-        return collection.removeLower(vehicle, this.getUser()) + "\n";
+    public Reply execute() throws CommandExecutionException {
+        return collection.removeLower(vehicle, this.getUser());
     }
 }

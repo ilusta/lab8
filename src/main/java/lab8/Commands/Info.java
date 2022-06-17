@@ -1,5 +1,6 @@
 package lab8.Commands;
 
+import lab8.Essentials.Reply;
 import lab8.Server.VehicleCollectionServer.VehicleCollection;
 
 
@@ -29,8 +30,8 @@ public class Info extends CollectionCommand
     }
 
     @Override
-    public String execute(){
-        return collection.info() + "\n";
+    public Reply execute(){
+        return collection.info();
     }
 
 }
