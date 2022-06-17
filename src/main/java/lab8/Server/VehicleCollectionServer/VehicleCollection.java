@@ -316,6 +316,6 @@ public class VehicleCollection {
 
     public Reply info(){
         return  new Reply(true,
-                "Linked hash map.\n" + this.getSize() + " vehicles.\nCreation date: " + this.getCreationDate().format(DateTimeFormatter.ISO_DATE_TIME), "");
+                "Linked hash map.\n" + this.getSize() + " vehicles.\nCreated at: " + this.getCreationDate().format(DateTimeFormatter.ISO_DATE_TIME), "");
     }
 }

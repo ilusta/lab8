@@ -23,7 +23,6 @@ import lab8.Essentials.Vehicle.Vehicle;
 import lab8.Exceptions.ConnectionException;
 import lab8.Essentials.Vehicle.VehicleType;
 
-import java.time.ZonedDateTime;
 import java.util.ArrayList;
 
 public class AppController {
@@ -91,20 +90,32 @@ public class AppController {
     private TableColumn<AppVehicle, VehicleType> typeColumn;
 
     @FXML
+    private TextField findField;
+    @FXML
+    private SplitMenuButton findSelector;
+    @FXML
+    private MenuItem filterSelectorNone;
+    @FXML
+    private MenuItem filterSelectorID;
+    @FXML
+    private MenuItem filterSelectorName;
+    @FXML
+    private MenuItem filterSelectorKey;
+
+    @FXML
     protected Label connectionStatusLabel;
     @FXML
-    protected Label collectionInfoLabel;
-    @FXML
-    protected Button addVehicleButton;
+    protected Label tableInfoLable;
+
 
     Stage stage;
 
-    ObservableList collection = FXCollections.observableArrayList();
+    ObservableList<AppVehicle> collection = FXCollections.observableArrayList();
 
     static protected String user = null;
     static protected String password = null;
 
-    private String collectionInfo = "";
+    String selectedFilterColumn = null;
 
 
     public void exit(ActionEvent event){
@@ -176,10 +187,16 @@ public class AppController {
         typeColumn.setText(LocalResources.rb.getString("typeColumn"));
 
         connectionStatusLabel.setText(LocalResources.rb.getString("connectionStatusLabel")+":");
-        collectionInfoLabel.setText(LocalResources.rb.getString("collectionInfoLabel")+": "+collectionInfo);
-        addVehicleButton.setText(LocalResources.rb.getString("addVehicleButton"));
+        tableInfoLable.setText(LocalResources.rb.getString("tableInfoLabel"));
+
+        findField.setPromptText(LocalResources.rb.getString("find"));
+        findSelector.setText(LocalResources.rb.getString("in"));
+        filterSelectorID.setText(LocalResources.rb.getString("idColumnFilter"));
+        filterSelectorName.setText(LocalResources.rb.getString("nameColumnFilter"));
+        filterSelectorKey.setText(LocalResources.rb.getString("keyColumnFilter"));
 
         updateServerConnection();
+        updateTableContent(collection);
     }
 
     public void initTable(){
@@ -199,7 +216,65 @@ public class AppController {
     public void updateTableContent(ObservableList<AppVehicle> vehicles){
         vehiclesTable.setItems(vehicles);
         vehiclesTable.setEditable(true);
+        tableInfoLable.setText(LocalResources.rb.getString("tableInfoShowing")+
+                " "+vehicles.size()+" "+LocalResources.rb.getString("tableInfoVehiclesFrom")+
+                " "+collection.size()+" "+LocalResources.rb.getString("tableInfoInCollection"));
         //vehiclesTable.getSelectionModel().setCellSelectionEnabled(true);
+    }
+
+    public void updateMap(ObservableList<AppVehicle> vehicles){
+
+    }
+
+    public void selectedFilterNone(){
+        selectedFilterColumn = null;
+        filter();
+    }
+    public void selectedFilterID(){
+        selectedFilterColumn = "ID";
+        filter();
+    }
+    public void selectedFilterName(){
+        selectedFilterColumn = "NAME";
+        filter();
+    }
+    public void selectedFilterKey(){
+        selectedFilterColumn = "KEY";
+        filter();
+    }
+
+    public void filter(){
+        String s = findField.getText();
+        if(selectedFilterColumn == null || s.equals("")) updateTableContent(collection);
+        else{
+            ObservableList<AppVehicle> filteredCollection = FXCollections.observableArrayList();
+
+            switch (selectedFilterColumn){
+                case ("ID"):
+                    try{
+                        Long id = Long.parseLong(s);
+                        collection.stream().filter(veh -> veh.getId().equals(id)).forEach(filteredCollection::add);
+                    }
+                    catch (Exception e){}
+                    break;
+
+                case ("NAME"):
+                    try{
+                        collection.stream().filter(veh -> veh.getName().contains(s)).forEach(filteredCollection::add);
+                    }
+                    catch (Exception e){}
+                    break;
+
+                case ("KEY"):
+                    try{
+                        collection.stream().filter(veh -> veh.getKey().startsWith(s)).forEach(filteredCollection::add);
+                    }
+                    catch (Exception e){}
+                    break;
+            }
+
+            updateTableContent(filteredCollection);
+        }
     }
 
     public void updateServerConnection(){
@@ -218,21 +293,21 @@ public class AppController {
                 connectionStatusLabel.setText(LocalResources.rb.getString("connectionStatusLabel") + ": " + LocalResources.rb.getString("connected"));
         else
             connectionStatusLabel.setText(LocalResources.rb.getString("connectionStatusLabel")+": "+LocalResources.rb.getString("notConnected"));
-
-
     }
 
     public void connectionLostError(){
-        VehicleCollectionClient.disconnect();
-        collection.clear();
-        user = null;
-        password = null;
-        collectionInfo = "";
-        Alert alert = new Alert(Alert.AlertType.ERROR);
-        alert.setTitle(LocalResources.rb.getString("error"));
-        alert.setContentText(LocalResources.rb.getString("connectionLost") + "!");
-        alert.showAndWait();
-        updateServerConnection();
+        if(!ClientConnectionHandler.isConnected()) {
+            //ClientConnectionHandler.disconnect();
+            collection.clear();
+            user = null;
+            password = null;
+            Alert alert = new Alert(Alert.AlertType.ERROR);
+            alert.setTitle(LocalResources.rb.getString("error"));
+            alert.setContentText(LocalResources.rb.getString("connectionLost") + "!");
+            alert.showAndWait();
+            updateServerConnection();
+            updateTableContent(collection);
+        }
     }
 
     public void updateCollectionFromServer(){
@@ -246,16 +321,9 @@ public class AppController {
                 collection.clear();
                 ArrayList<Vehicle> data = (ArrayList<Vehicle>) reply.getData();
                 data.stream().map(veh -> new AppVehicle(veh)).forEach(veh -> collection.add(veh));
+
                 updateTableContent(collection);
-
-                ClientConnectionHandler.write(new Request(user, password, new Info()));
-                char[] rawInfo = ((String) ClientConnectionHandler.read().getData()).toCharArray();
-                for(int i = 0; i < rawInfo.length; i++) if(rawInfo[i] == '\n') rawInfo[i] = ' ';
-                StringBuilder info = new StringBuilder();
-                info.append(rawInfo);
-                collectionInfo = info.toString();
-
-                collectionInfoLabel.setText(LocalResources.rb.getString("collectionInfoLabel")+": "+collectionInfo);
+                updateMap(collection);
 
             } catch (Exception e) {
                 if(e instanceof ConnectionException) connectionLostError();

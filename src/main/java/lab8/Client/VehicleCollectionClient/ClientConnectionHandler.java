@@ -41,7 +41,7 @@ public class ClientConnectionHandler {
             socket = new Socket(inetAddress, port);
             System.out.println("\tSocket has been created: " + socket);
 
-            socket.setSoTimeout(20000);
+            socket.setSoTimeout(5000);
             outputStream = new ObjectOutputStream(new BufferedOutputStream(socket.getOutputStream()));
             outputStream.flush();
             inputStream = new ObjectInputStream(new BufferedInputStream(socket.getInputStream()));
@@ -81,6 +81,7 @@ public class ClientConnectionHandler {
         }
         catch(Exception e){
             if(e instanceof IOException || e instanceof NullPointerException){
+                disconnect();
                 throw new ConnectionException("Connection with server is lost.");
             }
             else {
@@ -97,6 +98,7 @@ public class ClientConnectionHandler {
         }
         catch(Exception e){
             if(e instanceof IOException || e instanceof NullPointerException){
+                disconnect();
                 throw new ConnectionException("Connection with server is lost.");
             }
             else {

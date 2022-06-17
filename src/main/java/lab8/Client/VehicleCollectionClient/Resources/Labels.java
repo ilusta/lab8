@@ -31,9 +31,12 @@ public class Labels extends ListResourceBundle {
             {"sumOfWheelsWindow", "Sum of wheels in collection"},
 
             {"connectionStatusLabel", "Connection status"},
-            {"collectionInfoLabel", "Collection information"},
+            {"tableInfoLabel", "Table info"},
+            {"tableInfoShowing", "Showing"},
+            {"tableInfoVehiclesFrom", "vehicles from"},
+            {"tableInfoInCollection", "in collection"},
 
-            {"emptyTable", "No vehicles in collection"},
+            {"emptyTable", "No vehicles"},
             {"idColumn", "ID"},
             {"keyColumn", "Key"},
             {"userColumn", "User"},
@@ -65,5 +68,11 @@ public class Labels extends ListResourceBundle {
             {"loginButton", "Log in"},
             {"cancelButton", "Cancel"},
             {"unableToLogIn", "Unable to log in"},
-            {"authorizedAs", "authorized as"}};
+            {"authorizedAs", "authorized as"},
+
+            {"find", "Find"},
+            {"in", "in"},
+            {"idColumnFilter", "ID (equals)"},
+            {"nameColumnFilter", "Name (contains)"},
+            {"keyColumnFilter", "Key (starts with)"}};
 }

@@ -31,9 +31,12 @@ public class Labels_ru extends ListResourceBundle {
             {"sumOfWheelsWindow", "Сумма колёс в коллекции"},
 
             {"connectionStatusLabel", "Статус подключения"},
-            {"collectionInfoLabel", "Информация о коллекции"},
+            {"tableInfoLabel", "Информация о таблице"},
+            {"tableInfoShowing", "Отображается"},
+            {"tableInfoVehiclesFrom", "транспортных средств из"},
+            {"tableInfoInCollection", "в коллекции"},
 
-            {"emptyTable", "В коллекции нет транспортных средств"},
+            {"emptyTable", "Нет транспортных средств"},
             {"idColumn", "ID"},
             {"keyColumn", "Ключ"},
             {"userColumn", "Пользователь"},
@@ -65,5 +68,11 @@ public class Labels_ru extends ListResourceBundle {
             {"loginButton", "Войти"},
             {"cancelButton", "Отмена"},
             {"unableToLogIn", "Ошибка при входе"},
-            {"authorizedAs", "авторизован как"}};
+            {"authorizedAs", "авторизован как"},
+
+            {"find", "Найти"},
+            {"in", "в"},
+            {"idColumnFilter", "ID (совпадает)"},
+            {"nameColumnFilter", "Имя (содержит)"},
+            {"keyColumnFilter", "Ключ (начинается с)"}};
 }
