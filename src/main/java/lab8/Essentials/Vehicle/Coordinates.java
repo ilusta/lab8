@@ -33,6 +33,22 @@ public class Coordinates implements Comparable<Coordinates>, Serializable
     }
 
     @Override
+    public boolean equals(final Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (obj == null) {
+            return false;
+        }
+        if (this.getClass() != obj.getClass()) {
+            return false;
+        }
+        final Coordinates other = (Coordinates) obj;
+        return this.x.equals(other.x) &&
+                this.y.equals(other.y);
+    }
+
+    @Override
     public int compareTo(Coordinates O) {
         Integer ty = getYCoordinate();
         if(ty == null) ty = 0;

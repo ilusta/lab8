@@ -42,13 +42,13 @@
                      <items>
                         <MenuItem fx:id="menuServerConnect" mnemonicParsing="false" onAction="#connect" text="Connect" />
                         <MenuItem fx:id="menuServerLogIn" mnemonicParsing="false" onAction="#login" text="Log in" />
-                        <MenuItem fx:id="menuServerRegister" mnemonicParsing="false" text="Register" />
+                        <MenuItem fx:id="menuServerRegister" mnemonicParsing="false" onAction="#register" text="Register" />
                      </items>
                   </Menu>
                   <Menu fx:id="menuCollection" mnemonicParsing="false" text="Collection">
                     <items>
                       <MenuItem fx:id="menuCollectionInfo" mnemonicParsing="false" onAction="#getCollectionInformation" text="Information" />
-                        <MenuItem fx:id="menuCollectionAdd" mnemonicParsing="false" text="Add Vehicle" />
+                        <MenuItem fx:id="menuCollectionAdd" mnemonicParsing="false" onAction="#addVehicle" text="Add Vehicle" />
                         <MenuItem fx:id="menuCollectionSumOfWheels" mnemonicParsing="false" onAction="#getSumOfWheels" text="Sum of wheels" />
                     </items>
                   </Menu>
@@ -85,7 +85,7 @@
         <items>
             <VBox alignment="TOP_CENTER">
                <children>
-                  <TableView fx:id="vehiclesTable" editable="true" maxHeight="2000.0" maxWidth="3000.0" minHeight="200.0" minWidth="200.0" prefHeight="500.0" prefWidth="800.0" VBox.vgrow="ALWAYS">
+                  <TableView fx:id="vehiclesTable" editable="true" maxHeight="2000.0" maxWidth="3000.0" minHeight="200.0" minWidth="200.0" onKeyPressed="#delete" prefHeight="500.0" prefWidth="800.0" VBox.vgrow="ALWAYS">
                      <columns>
                         <TableColumn fx:id="idColumn" maxWidth="200.0" minWidth="20.0" prefWidth="40.0" text="ID" />
                         <TableColumn fx:id="keyColumn" maxWidth="200.0" minWidth="20.0" prefWidth="60.0" text="Key" />

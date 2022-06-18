@@ -131,7 +131,7 @@ public class VehicleCollection {
         if(!foundVehicle.get().getUser().equals(user))
             return new Reply(false, "Vehicle with ID=" + givenID +" belongs to another user");
 
-        try(PreparedStatement preparedStatement = connection.prepareStatement("UPDATE collection" +
+        try(PreparedStatement preparedStatement = connection.prepareStatement("UPDATE collection " +
                 "SET name=?, x=?, y=?, date=?, enginepower=?, numberofwheels=?, capacity=?, type=? " +
                 "WHERE (id=? AND \"user\" =?);")){
 

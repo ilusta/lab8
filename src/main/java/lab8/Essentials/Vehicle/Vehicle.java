@@ -311,14 +311,30 @@ public class Vehicle implements Comparable<Vehicle>, Serializable
         if (this.getClass() != obj.getClass()) {
             return false;
         }
-        final Vehicle other = (Vehicle)obj;
-        return this.id == other.id &&
-                this.name.equals(other.name) &&
-                this.coordinates.equals(other.coordinates) &&
-                this.enginePower.equals(other.enginePower) &&
-                this.numberOfWheels.equals(other.numberOfWheels) &&
-                this.capacity.equals(other.capacity) &&
-                this.type.equals(other.type);
+
+        try {
+            final Vehicle other = (Vehicle) obj;
+            boolean ep = false;
+            if (this.enginePower == null && other.enginePower == null) ep = true;
+            else if (this.enginePower.equals(other.enginePower)) ep = true;
+
+            boolean n = false;
+            if (this.numberOfWheels == null && other.numberOfWheels == null) n = true;
+            else if (this.numberOfWheels.equals(other.numberOfWheels)) n = true;
+
+
+            return this.id.equals(other.id) &&
+                    this.user.equals(other.user) &&
+                    this.name.equals(other.name) &&
+                    this.coordinates.equals(other.coordinates) &&
+                    ep &&
+                    n &&
+                    this.capacity.equals(other.capacity) &&
+                    this.type.equals(other.type);
+        }
+        catch (NullPointerException e){
+            return false;
+        }
     }
 
     @Override

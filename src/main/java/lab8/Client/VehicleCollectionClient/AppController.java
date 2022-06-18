@@ -1,6 +1,7 @@
 package lab8.Client.VehicleCollectionClient;
 
 import javafx.animation.ScaleTransition;
+import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
@@ -21,15 +22,12 @@ import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.event.ActionEvent;
 import javafx.util.Duration;
-import javafx.util.StringConverter;
 import javafx.util.converter.DoubleStringConverter;
 import javafx.util.converter.IntegerStringConverter;
 import javafx.util.converter.LongStringConverter;
-import lab8.Commands.Info;
-import lab8.Commands.SumOfNumberOfWheels;
+import lab8.Commands.*;
 import lab8.Essentials.AppVehicle;
 import lab8.Client.VehicleCollectionClient.Resources.LocalResources;
-import lab8.Commands.Show;
 import lab8.Essentials.Reply;
 import lab8.Essentials.Request;
 import lab8.Essentials.Vehicle.Vehicle;
@@ -40,6 +38,11 @@ import lab8.Essentials.Vehicle.VehicleType;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.Objects;
+import java.util.Observer;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.ScheduledFuture;
+import java.util.concurrent.TimeUnit;
 
 public class AppController {
 
@@ -125,14 +128,17 @@ public class AppController {
     private Label mapLabel;
 
 
-    Stage stage;
-
-    ObservableList<AppVehicle> collection = FXCollections.observableArrayList();
+    private Stage stage;
+    private ObservableList<AppVehicle> collection = FXCollections.observableArrayList();
+    private ArrayList<Vehicle> prevData = new ArrayList<>();
 
     static protected String user = null;
     static protected String password = null;
 
-    String selectedFilterColumn = null;
+    private String selectedFilterColumn = null;
+
+    protected ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(0);
+    private ScheduledFuture<?> updateResult;
 
 
     public void exit(ActionEvent event){
@@ -141,6 +147,8 @@ public class AppController {
         alert.setContentText(LocalResources.rb.getString("closeApp")+"?");
 
         if(alert.showAndWait().get() == ButtonType.OK) {
+            if(updateResult != null) updateResult.cancel(true);
+            scheduler.shutdown();
             stage = (Stage) mainPain.getScene().getWindow();
             stage.close();
         }
@@ -214,6 +222,72 @@ public class AppController {
         updateTableContent(collection);
     }
 
+    public void delete(){
+        int i = vehiclesTable.getSelectionModel().getFocusedIndex();
+        String vehicleUser = userColumn.getCellData(i);
+
+        if(Objects.equals(user, vehicleUser)) {
+            Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+            alert.setTitle(LocalResources.rb.getString("attention") + "!");
+            alert.setContentText(LocalResources.rb.getString("deleteVehicle") + "?");
+
+            if (alert.showAndWait().get() == ButtonType.OK) {
+                String key = keyColumn.getCellData(i);
+                try{
+                    ClientConnectionHandler.write(new Request(AppController.user, AppController.password, new RemoveKey().build(new String[]{"", key})));
+                    Reply r = ClientConnectionHandler.read();
+                    if(!r.isSuccessful()) throw new RuntimeException(r.getMessage());
+                }
+                catch (Exception e){
+                    Alert alert2 = new Alert(Alert.AlertType.ERROR);
+                    alert2.setTitle(LocalResources.rb.getString("Error") + "!");
+                    alert2.setContentText(e.getMessage());
+                    alert2.showAndWait();
+                }
+                updateServerConnection();
+                updateCollectionFromServer();
+            }
+        }
+    }
+
+    public void addVehicle(){
+        try {
+            Stage stage = new Stage();
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/addWindow.fxml"));
+            Parent root = loader.load();
+            AddController controller = loader.getController();
+            controller.updateLabels();
+            stage.setScene(new Scene(root));
+            stage.setTitle(LocalResources.rb.getString("addWindow"));
+            stage.initModality(Modality.WINDOW_MODAL);
+            stage.initOwner(mainPain.getScene().getWindow());
+            stage.setResizable(false);
+            stage.showAndWait();
+            updateServerConnection();
+            updateCollectionFromServer();
+        }
+        catch (Exception e){
+            System.out.println("Error: " + e);
+        }
+    }
+
+    public void updateVehicleAtServer(AppVehicle vehicle){
+        try {
+            Update update = new Update();
+            update.addVehicle(vehicle);
+            ClientConnectionHandler.write(new Request(user, password, update));
+            Reply r = ClientConnectionHandler.read();
+            if(!r.isSuccessful()) {
+                Alert alert = new Alert(Alert.AlertType.ERROR);
+                alert.setContentText(r.getMessage());
+                alert.showAndWait();
+            }
+
+            updateCollectionFromServer();
+        }catch (Exception e){}
+    }
+
+
     public void initTable(){
         vehiclesTable.setEditable(true);
         idColumn.setCellValueFactory(new PropertyValueFactory<>("id"));
@@ -231,7 +305,10 @@ public class AppController {
                     alert.setContentText(LocalResources.rb.getString("canNotBeNullOrEmpty"));
                     alert.showAndWait();
                 }
-                else vehicle.setName(name);
+                else{
+                    vehicle.setName(name);
+                    updateVehicleAtServer(vehicle);
+                }
             }
             vehiclesTable.refresh();
         });
@@ -250,7 +327,10 @@ public class AppController {
                     alert.setContentText(LocalResources.rb.getString("canNotBeNull"));
                     alert.showAndWait();
                 }
-                else vehicle.setX(x);
+                else{
+                    vehicle.setX(x);
+                    updateVehicleAtServer(vehicle);
+                }
             }
             vehiclesTable.refresh();
         });
@@ -267,7 +347,10 @@ public class AppController {
                     alert.setContentText(LocalResources.rb.getString("canNotBeNull"));
                     alert.showAndWait();
                 }
-                else vehicle.setY(y);
+                else {
+                    vehicle.setY(y);
+                    updateVehicleAtServer(vehicle);
+                }
             }
             vehiclesTable.refresh();
         });
@@ -286,7 +369,10 @@ public class AppController {
                     alert.setContentText(LocalResources.rb.getString("canNotBeNegative"));
                     alert.showAndWait();
                 }
-                else vehicle.setEnginePower(power);
+                else {
+                    vehicle.setEnginePower(power);
+                    updateVehicleAtServer(vehicle);
+                }
             }
             vehiclesTable.refresh();
         });
@@ -303,7 +389,10 @@ public class AppController {
                     alert.setContentText(LocalResources.rb.getString("canNotBeNegative"));
                     alert.showAndWait();
                 }
-                else vehicle.setNumberOfWheels(number);
+                else {
+                    vehicle.setNumberOfWheels(number);
+                    updateVehicleAtServer(vehicle);
+                }
             }
             vehiclesTable.refresh();
         });
@@ -320,7 +409,10 @@ public class AppController {
                     alert.setContentText(LocalResources.rb.getString("canNotBeNullOrNegative"));
                     alert.showAndWait();
                 }
-                else vehicle.setCapacity(capacity);
+                else {
+                    vehicle.setCapacity(capacity);
+                    updateVehicleAtServer(vehicle);
+                }
             }
             vehiclesTable.refresh();
         });
@@ -337,7 +429,10 @@ public class AppController {
                     alert.setContentText(LocalResources.rb.getString("mustBeOnOfTypes"));
                     alert.showAndWait();
                 }
-                else vehicle.setType(type);
+                else {
+                    vehicle.setType(type);
+                    updateVehicleAtServer(vehicle);
+                }
             }
             vehiclesTable.refresh();
         });
@@ -348,17 +443,18 @@ public class AppController {
         tableInfoLable.setText(LocalResources.rb.getString("tableInfoShowing")+
                 " "+vehicles.size()+" "+LocalResources.rb.getString("tableInfoVehiclesFrom")+
                 " "+collection.size()+" "+LocalResources.rb.getString("tableInfoInCollection"));
-        //vehiclesTable.getSelectionModel().setCellSelectionEnabled(true);
+        vehiclesTable.refresh();
     }
 
     public void updateMap(ObservableList<AppVehicle> vehicles){
+        mapPane.getChildren().clear();
+
         Integer xMax = vehicles.stream().max(Comparator.comparing(AppVehicle::getX)).get().getX();
         Integer xMin = vehicles.stream().min(Comparator.comparing(AppVehicle::getX)).get().getX();
         Integer yMax = vehicles.stream().max(Comparator.comparing(AppVehicle::getY)).get().getY();
         Integer yMin = vehicles.stream().min(Comparator.comparing(AppVehicle::getY)).get().getY();
         int maxCoord = Math.max(Math.max(Math.abs(xMax), Math.abs(xMin)), Math.max(Math.abs(yMax), Math.abs(yMin)));
 
-        //mapPane.setBackground(new Background(new BackgroundFill(new Paint())));
         for(AppVehicle vehicle : vehicles){
             ScaleTransition scale = new ScaleTransition();
             Node symbol = mapSymbol(vehicle, (int) mapPane.getWidth(), (int) mapPane.getHeight(), maxCoord);
@@ -405,11 +501,19 @@ public class AppController {
 
         Canvas canvas = new Canvas(34, 34);
         canvas.setTranslateX(cX + vehicle.getX()*coordToPixel);
-        canvas.setTranslateY(cY + vehicle.getY()*coordToPixel);
+        canvas.setTranslateY(cY - vehicle.getY()*coordToPixel);
+
+        byte[] user = vehicle.getUser().getBytes();
+        int colorHash = 0;
+        for(byte b : user) colorHash ^= (b + 127);
+        double r = (Math.abs(colorHash)%112)/112.0;
+        double g = (Math.abs(colorHash)%67)/67.0;
+        double b = (Math.abs(colorHash)%215)/215.0;
+        Color color = new Color(r, g, b, 1);
 
         GraphicsContext gc = canvas.getGraphicsContext2D();
         gc.fill();
-        gc.setStroke(Color.BLACK);
+        gc.setStroke(color);
         gc.setFill(Color.WHITE);
 
         if (vehicle.getType() == VehicleType.BICYCLE) {
@@ -537,8 +641,9 @@ public class AppController {
         menuCollectionSumOfWheels.setDisable(!isConnected);
 
         if(isConnected)
-            if (user != null)
-                connectionStatusLabel.setText(LocalResources.rb.getString("connectionStatusLabel") + ": " + LocalResources.rb.getString("authorizedAs")+" "+AppController.user);
+            if (user != null) {
+                connectionStatusLabel.setText(LocalResources.rb.getString("connectionStatusLabel") + ": " + LocalResources.rb.getString("authorizedAs") + " " + AppController.user);
+            }
             else
                 connectionStatusLabel.setText(LocalResources.rb.getString("connectionStatusLabel") + ": " + LocalResources.rb.getString("connected"));
         else
@@ -547,7 +652,8 @@ public class AppController {
 
     public void connectionLostError(){
         if(!ClientConnectionHandler.isConnected()) {
-            //ClientConnectionHandler.disconnect();
+            if(updateResult != null) updateResult.cancel(true);
+
             collection.clear();
             user = null;
             password = null;
@@ -561,19 +667,24 @@ public class AppController {
     }
 
     public void updateCollectionFromServer(){
-        if(ClientConnectionHandler.isConnected()) {
+        if(ClientConnectionHandler.isConnected() && (selectedFilterColumn == null ||  findField.getText().equals(""))) {
             try {
                 ClientConnectionHandler.write(new Request(user, password, new Show()));
                 Reply reply = ClientConnectionHandler.read();
 
                 if (!reply.isSuccessful()) throw new RuntimeException("Reply is error");
 
-                collection.clear();
-                ArrayList<Vehicle> data = (ArrayList<Vehicle>) reply.getData();
-                data.stream().map(veh -> new AppVehicle(veh)).forEach(veh -> collection.add(veh));
 
-                updateTableContent(collection);
-                updateMap(collection);
+                ArrayList<Vehicle> data = (ArrayList<Vehicle>) reply.getData();
+                if(!data.equals(prevData)){
+                    collection.clear();
+                    data.stream().map(veh -> new AppVehicle(veh)).forEach(veh -> collection.add(veh));
+
+                    updateTableContent(collection);
+                    updateMap(collection);
+                }
+                prevData.clear();
+                prevData.addAll(data);
 
             } catch (Exception e) {
                 if(e instanceof ConnectionException) connectionLostError();
@@ -608,7 +719,23 @@ public class AppController {
     }
 
     public void register(ActionEvent event){
-
+        try {
+            Stage stage = new Stage();
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/RegistrationWindow.fxml"));
+            Parent root = loader.load();
+            RegistrationController controller= loader.getController();
+            controller.updateLabels();
+            stage.setScene(new Scene(root));
+            stage.setTitle(LocalResources.rb.getString("registerWindow"));
+            stage.initModality(Modality.WINDOW_MODAL);
+            stage.initOwner(mainPain.getScene().getWindow());
+            stage.setResizable(false);
+            stage.showAndWait();
+            updateServerConnection();
+        }
+        catch (Exception e){
+            System.out.println("Error: " + e);
+        }
     }
 
     public void connect(ActionEvent event){
@@ -627,8 +754,14 @@ public class AppController {
 
             updateServerConnection();
             login();
-            updateCollectionFromServer();
 
+            if(updateResult != null) updateResult.cancel(true);
+
+            updateResult = scheduler.scheduleWithFixedDelay(() -> Platform.runLater(() -> {
+                if (ClientConnectionHandler.isConnected() && !scheduler.isTerminated()) {
+                    updateCollectionFromServer();
+                }
+            }), 0, 5, TimeUnit.SECONDS);
         }
         catch (Exception e){
             System.out.println("Error: " + e);

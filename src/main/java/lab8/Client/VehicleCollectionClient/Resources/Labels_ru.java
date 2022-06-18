@@ -21,6 +21,7 @@ public class Labels_ru extends ListResourceBundle {
             {"menuCollectionSortByName", "По имени"},
             {"menuCollectionSumOfWheels", "Сумма всех колёс"},
             {"menuHelpAbout", "О приложении"},
+            {"addWindow", "Добавление транспорта"},
 
             {"aboutAppWindow", "О приложении"},
             {"informationAboutApp", "Это приложение для операций с коллекцией транспортных средств, расположенной на удалённом сервере.\nРазработчик: ilust"},
@@ -29,6 +30,7 @@ public class Labels_ru extends ListResourceBundle {
             {"registerWindow", "Зарегистрироваться"},
             {"collectionInformationWindow", "Информация о коллекции"},
             {"sumOfWheelsWindow", "Сумма колёс в коллекции"},
+            {"registerWindow", "Регистрация"},
 
             {"connectionStatusLabel", "Статус подключения"},
             {"tableInfoLabel", "Информация о таблице"},
@@ -86,5 +88,6 @@ public class Labels_ru extends ListResourceBundle {
             {"canNotBeNegative", "Это значение должно быть больше нуля"},
             {"canNotBeNullOrEmpty", "Это значение не может быть null или пустым"},
             {"canNotBeNullOrNegative", "Это значение не может быть null и должно быть больше нуля"},
-            {"mustBeOnOfTypes", "Тип должен быть одним из:\n BICYCLE, BOAT, DRONE, HELICOPTER, HOVERBOARD"}};
+            {"mustBeOnOfTypes", "Тип должен быть одним из:\n BICYCLE, BOAT, DRONE, HELICOPTER, HOVERBOARD"},
+            {"deleteVehicle", "Удалить транспорт"}};
 }

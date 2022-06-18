@@ -1,8 +1,6 @@
 package lab8.Client.VehicleCollectionClient;
 
 import javafx.fxml.FXML;
-import javafx.fxml.FXMLLoader;
-import javafx.scene.Parent;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
@@ -10,13 +8,13 @@ import javafx.scene.control.TextField;
 import javafx.scene.layout.AnchorPane;
 import javafx.stage.Stage;
 import lab8.Client.VehicleCollectionClient.Resources.LocalResources;
+import lab8.Commands.Command;
 import lab8.Commands.LogIn;
+import lab8.Commands.RegisterUser;
 import lab8.Essentials.Reply;
 import lab8.Essentials.Request;
 
-import java.awt.event.ActionEvent;
-
-public class LogInController {
+public class RegistrationController {
     @FXML
     private AnchorPane mainPane;
     @FXML
@@ -54,7 +52,8 @@ public class LogInController {
         AppController.user = usernameField.getText();
         AppController.password = passwordField.getText();
         try {
-            ClientConnectionHandler.write(new Request(AppController.user, AppController.password, new LogIn()));
+            Command reg = new RegisterUser().build(new String[]{"", AppController.user, AppController.password});
+            ClientConnectionHandler.write(new Request(AppController.user, AppController.password, reg));
             Reply reply = ClientConnectionHandler.read();
             if(!reply.isSuccessful()) throw new RuntimeException(reply.getMessage());
 

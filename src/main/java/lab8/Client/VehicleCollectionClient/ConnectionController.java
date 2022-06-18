@@ -27,8 +27,6 @@ public class ConnectionController {
         enterIPAndPort.setText(LocalResources.rb.getString("enterIpAndPort"));
         connectButton.setText(LocalResources.rb.getString("connectButton"));
         cancelButton.setText(LocalResources.rb.getString("cancelButton"));
-
-        inputField.setText("0.0.0.0.5");
     }
 
     public void cancel(){
@@ -43,7 +41,7 @@ public class ConnectionController {
             args = input.split("[.:]");
             if(args.length < 5) throw new InputException("Not enough arguments");
 
-            VehicleCollectionClient.connect(args);
+            ClientConnectionHandler.connect(args);
 
             Stage stage = (Stage) mainPane.getScene().getWindow();
             stage.close();

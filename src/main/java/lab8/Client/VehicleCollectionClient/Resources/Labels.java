@@ -29,6 +29,8 @@ public class Labels extends ListResourceBundle {
             {"registerWindow", "Register"},
             {"collectionInformationWindow", "Information about collection"},
             {"sumOfWheelsWindow", "Sum of wheels in collection"},
+            {"registerWindow", "Registration"},
+            {"addWindow", "Add Vehicle"},
 
             {"connectionStatusLabel", "Connection status"},
             {"tableInfoLabel", "Table info"},
@@ -86,5 +88,6 @@ public class Labels extends ListResourceBundle {
             {"canNotBeNegative", "this value can not be negative"},
             {"canNotBeNullOrEmpty", "this value can not be null or empty"},
             {"canNotBeNullOrNegative", "this value can not be null or negative"},
-            {"mustBeOnOfTypes", "Type must be on of these:\n BICYCLE, BOAT, DRONE, HELICOPTER, HOVERBOARD"}};
+            {"mustBeOnOfTypes", "Type must be on of these:\n BICYCLE, BOAT, DRONE, HELICOPTER, HOVERBOARD"},
+            {"deleteVehicle", "Delete vehicle"}};
 }
