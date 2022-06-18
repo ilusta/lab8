@@ -27,6 +27,8 @@ public class ConnectionController {
         enterIPAndPort.setText(LocalResources.rb.getString("enterIpAndPort"));
         connectButton.setText(LocalResources.rb.getString("connectButton"));
         cancelButton.setText(LocalResources.rb.getString("cancelButton"));
+
+        inputField.setText("0.0.0.0.5");
     }
 
     public void cancel(){

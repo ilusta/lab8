@@ -13,7 +13,8 @@ public class Coordinates implements Comparable<Coordinates>, Serializable
         this.x = x;
     }
 
-    public void setYCoordinate(Integer y) {
+    public void setYCoordinate(Integer y) throws NullException {
+        if (y == null) throw new NullException("Y coordinate can not be NULL");
         this.y = y;
     }
 

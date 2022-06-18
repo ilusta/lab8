@@ -74,5 +74,17 @@ public class Labels_ru extends ListResourceBundle {
             {"in", "в"},
             {"idColumnFilter", "ID (совпадает)"},
             {"nameColumnFilter", "Имя (содержит)"},
-            {"keyColumnFilter", "Ключ (начинается с)"}};
+            {"keyColumnFilter", "Ключ (начинается с)"},
+
+            {"mapLabelHint", "Выберите транспорт"},
+            {"mapLabelVehicleID", "Транспорт: ID"},
+            {"mapLabelVehicleKey", "ключ"},
+            {"mapLabelVehicleName", "имя"},
+
+            {"wrongInput", "Неверный ввод"},
+            {"canNotBeNull", "Это значение не может быть null"},
+            {"canNotBeNegative", "Это значение должно быть больше нуля"},
+            {"canNotBeNullOrEmpty", "Это значение не может быть null или пустым"},
+            {"canNotBeNullOrNegative", "Это значение не может быть null и должно быть больше нуля"},
+            {"mustBeOnOfTypes", "Тип должен быть одним из:\n BICYCLE, BOAT, DRONE, HELICOPTER, HOVERBOARD"}};
 }

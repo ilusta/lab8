@@ -39,6 +39,9 @@ public class LogInController {
         password.setText(LocalResources.rb.getString("password"));
         loginButton.setText(LocalResources.rb.getString("loginButton"));
         cancelButton.setText(LocalResources.rb.getString("cancelButton"));
+
+        usernameField.setText("ilust");
+        passwordField.setText("12345678");
     }
 
     public void usernameEnter(){

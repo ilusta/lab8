@@ -74,5 +74,17 @@ public class Labels_en extends ListResourceBundle {
             {"in", "in"},
             {"idColumnFilter", "ID (equals)"},
             {"nameColumnFilter", "Name (contains)"},
-            {"keyColumnFilter", "Key (starts with)"}};
+            {"keyColumnFilter", "Key (starts with)"},
+
+            {"mapLabelHint", "Select vehicle"},
+            {"mapLabelVehicleID", "Vehicle: ID"},
+            {"mapLabelVehicleKey", "key"},
+            {"mapLabelVehicleName", "name"},
+
+            {"wrongInput", "Wrong input"},
+            {"canNotBeNull", "this value can not be null"},
+            {"canNotBeNegative", "this value can not be negative"},
+            {"canNotBeNullOrEmpty", "this value can not be null or empty"},
+            {"canNotBeNullOrNegative", "this value can not be null or negative"},
+            {"mustBeOnOfTypes", "Type must be on of these:\n BICYCLE, BOAT, DRONE, HELICOPTER, HOVERBOARD"}};
 }

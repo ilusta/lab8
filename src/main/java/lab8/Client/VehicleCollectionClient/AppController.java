@@ -1,17 +1,30 @@
 package lab8.Client.VehicleCollectionClient;
 
+import javafx.animation.ScaleTransition;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
+import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.canvas.Canvas;
+import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.control.cell.TextFieldTableCell;
+import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.BorderPane;
+import javafx.scene.paint.Color;
+import javafx.scene.shape.ArcType;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.event.ActionEvent;
+import javafx.util.Duration;
+import javafx.util.StringConverter;
+import javafx.util.converter.DoubleStringConverter;
+import javafx.util.converter.IntegerStringConverter;
+import javafx.util.converter.LongStringConverter;
 import lab8.Commands.Info;
 import lab8.Commands.SumOfNumberOfWheels;
 import lab8.Essentials.AppVehicle;
@@ -20,10 +33,13 @@ import lab8.Commands.Show;
 import lab8.Essentials.Reply;
 import lab8.Essentials.Request;
 import lab8.Essentials.Vehicle.Vehicle;
+import lab8.Essentials.Vehicle.VehicleTypeStringConverter;
 import lab8.Exceptions.ConnectionException;
 import lab8.Essentials.Vehicle.VehicleType;
 
 import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.Objects;
 
 public class AppController {
 
@@ -49,12 +65,6 @@ public class AppController {
     private MenuItem menuCollectionInfo;
     @FXML
     private MenuItem menuCollectionAdd;
-    @FXML
-    private Menu menuCollectionSort;
-    @FXML
-    private MenuItem menuCollectionSortByType;
-    @FXML
-    private MenuItem menuCollectionSortByName;
     @FXML
     private MenuItem menuCollectionSumOfWheels;
     @FXML
@@ -106,6 +116,13 @@ public class AppController {
     protected Label connectionStatusLabel;
     @FXML
     protected Label tableInfoLable;
+
+    @FXML
+    private ScrollPane mapScrollPane;
+    @FXML
+    private AnchorPane mapPane;
+    @FXML
+    private Label mapLabel;
 
 
     Stage stage;
@@ -165,9 +182,6 @@ public class AppController {
         menuCollection.setText(LocalResources.rb.getString("menuCollection"));
         menuCollectionInfo.setText(LocalResources.rb.getString("menuCollectionInfo"));
         menuCollectionAdd.setText(LocalResources.rb.getString("menuCollectionAdd"));
-        menuCollectionSort.setText(LocalResources.rb.getString("menuCollectionSort"));
-        menuCollectionSortByType.setText(LocalResources.rb.getString("menuCollectionSortByType"));
-        menuCollectionSortByName.setText(LocalResources.rb.getString("menuCollectionSortByName"));
         menuCollectionSumOfWheels.setText(LocalResources.rb.getString("menuCollectionSumOfWheels"));
         menuHelp.setText(LocalResources.rb.getString("menuHelp"));
         menuHelpAbout.setText(LocalResources.rb.getString("menuHelpAbout"));
@@ -188,6 +202,7 @@ public class AppController {
 
         connectionStatusLabel.setText(LocalResources.rb.getString("connectionStatusLabel")+":");
         tableInfoLable.setText(LocalResources.rb.getString("tableInfoLabel"));
+        mapLabel.setText(LocalResources.rb.getString("mapLabelHint"));
 
         findField.setPromptText(LocalResources.rb.getString("find"));
         findSelector.setText(LocalResources.rb.getString("in"));
@@ -200,22 +215,136 @@ public class AppController {
     }
 
     public void initTable(){
-        idColumn.setCellValueFactory(new PropertyValueFactory<AppVehicle, Long>("id"));
-        keyColumn.setCellValueFactory(new PropertyValueFactory<AppVehicle, String>("key"));
-        nameColumn.setCellValueFactory(new PropertyValueFactory<AppVehicle, String>("name"));
-        userColumn.setCellValueFactory(new PropertyValueFactory<AppVehicle, String>("user"));
-        coordinatesXColumn.setCellValueFactory(new PropertyValueFactory<AppVehicle, Integer>("x"));
-        coordinatesYColumn.setCellValueFactory(new PropertyValueFactory<AppVehicle, Integer>("y"));
-        dateColumn.setCellValueFactory(new PropertyValueFactory<AppVehicle, String>("date"));
-        enginePowerColumn.setCellValueFactory(new PropertyValueFactory<AppVehicle, Double>("enginePower"));
-        numberOfWheelsColumn.setCellValueFactory(new PropertyValueFactory<AppVehicle, Long>("numberOfWheels"));
-        capacityColumn.setCellValueFactory(new PropertyValueFactory<AppVehicle, Double>("capacity"));
-        typeColumn.setCellValueFactory(new PropertyValueFactory<AppVehicle, VehicleType>("type"));
+        vehiclesTable.setEditable(true);
+        idColumn.setCellValueFactory(new PropertyValueFactory<>("id"));
+        keyColumn.setCellValueFactory(new PropertyValueFactory<>("key"));
+
+        nameColumn.setCellValueFactory(new PropertyValueFactory<>("name"));
+        nameColumn.setCellFactory(TextFieldTableCell.forTableColumn());
+        nameColumn.setOnEditCommit(event -> {
+            AppVehicle vehicle = event.getRowValue();
+            String name = event.getNewValue();
+            if(event.getRowValue().getUser().equals(user)) {
+                if (name == null || name.equals("")){
+                    Alert alert = new Alert(Alert.AlertType.ERROR);
+                    alert.setTitle(LocalResources.rb.getString("wrongInput"));
+                    alert.setContentText(LocalResources.rb.getString("canNotBeNullOrEmpty"));
+                    alert.showAndWait();
+                }
+                else vehicle.setName(name);
+            }
+            vehiclesTable.refresh();
+        });
+
+        userColumn.setCellValueFactory(new PropertyValueFactory<>("user"));
+
+        coordinatesXColumn.setCellValueFactory(new PropertyValueFactory<>("x"));
+        coordinatesXColumn.setCellFactory(TextFieldTableCell.forTableColumn(new IntegerStringConverter()));
+        coordinatesXColumn.setOnEditCommit(event -> {
+            AppVehicle vehicle = event.getRowValue();
+            Integer x = event.getNewValue();
+            if(event.getRowValue().getUser().equals(user)) {
+                if (x == null){
+                    Alert alert = new Alert(Alert.AlertType.ERROR);
+                    alert.setTitle(LocalResources.rb.getString("wrongInput"));
+                    alert.setContentText(LocalResources.rb.getString("canNotBeNull"));
+                    alert.showAndWait();
+                }
+                else vehicle.setX(x);
+            }
+            vehiclesTable.refresh();
+        });
+
+        coordinatesYColumn.setCellValueFactory(new PropertyValueFactory<>("y"));
+        coordinatesYColumn.setCellFactory(TextFieldTableCell.forTableColumn(new IntegerStringConverter()));
+        coordinatesYColumn.setOnEditCommit(event -> {
+            AppVehicle vehicle = event.getRowValue();
+            Integer y = event.getNewValue();
+            if(event.getRowValue().getUser().equals(user)) {
+                if (y == null){
+                    Alert alert = new Alert(Alert.AlertType.ERROR);
+                    alert.setTitle(LocalResources.rb.getString("wrongInput"));
+                    alert.setContentText(LocalResources.rb.getString("canNotBeNull"));
+                    alert.showAndWait();
+                }
+                else vehicle.setY(y);
+            }
+            vehiclesTable.refresh();
+        });
+
+        dateColumn.setCellValueFactory(new PropertyValueFactory<>("date"));
+
+        enginePowerColumn.setCellValueFactory(new PropertyValueFactory<>("enginePower"));
+        enginePowerColumn.setCellFactory(TextFieldTableCell.forTableColumn(new DoubleStringConverter()));
+        enginePowerColumn.setOnEditCommit(event -> {
+            AppVehicle vehicle = event.getRowValue();
+            Double power = event.getNewValue();
+            if(event.getRowValue().getUser().equals(user)) {
+                if (power <= 0){
+                    Alert alert = new Alert(Alert.AlertType.ERROR);
+                    alert.setTitle(LocalResources.rb.getString("wrongInput"));
+                    alert.setContentText(LocalResources.rb.getString("canNotBeNegative"));
+                    alert.showAndWait();
+                }
+                else vehicle.setEnginePower(power);
+            }
+            vehiclesTable.refresh();
+        });
+
+        numberOfWheelsColumn.setCellValueFactory(new PropertyValueFactory<>("numberOfWheels"));
+        numberOfWheelsColumn.setCellFactory(TextFieldTableCell.forTableColumn(new LongStringConverter()));
+        numberOfWheelsColumn.setOnEditCommit(event -> {
+            AppVehicle vehicle = event.getRowValue();
+            Long number = event.getNewValue();
+            if(event.getRowValue().getUser().equals(user)) {
+                if (number <= 0){
+                    Alert alert = new Alert(Alert.AlertType.ERROR);
+                    alert.setTitle(LocalResources.rb.getString("wrongInput"));
+                    alert.setContentText(LocalResources.rb.getString("canNotBeNegative"));
+                    alert.showAndWait();
+                }
+                else vehicle.setNumberOfWheels(number);
+            }
+            vehiclesTable.refresh();
+        });
+
+        capacityColumn.setCellValueFactory(new PropertyValueFactory<>("capacity"));
+        capacityColumn.setCellFactory(TextFieldTableCell.forTableColumn(new DoubleStringConverter()));
+        capacityColumn.setOnEditCommit(event -> {
+            AppVehicle vehicle = event.getRowValue();
+            Double capacity = event.getNewValue();
+            if(event.getRowValue().getUser().equals(user)) {
+                if (capacity <= 0){
+                    Alert alert = new Alert(Alert.AlertType.ERROR);
+                    alert.setTitle(LocalResources.rb.getString("wrongInput"));
+                    alert.setContentText(LocalResources.rb.getString("canNotBeNullOrNegative"));
+                    alert.showAndWait();
+                }
+                else vehicle.setCapacity(capacity);
+            }
+            vehiclesTable.refresh();
+        });
+
+        typeColumn.setCellValueFactory(new PropertyValueFactory<>("type"));
+        typeColumn.setCellFactory(TextFieldTableCell.forTableColumn(new VehicleTypeStringConverter()));
+        typeColumn.setOnEditCommit(event -> {
+            AppVehicle vehicle = event.getRowValue();
+            VehicleType type = event.getNewValue();
+            if(event.getRowValue().getUser().equals(user)) {
+                if (type == null){
+                    Alert alert = new Alert(Alert.AlertType.ERROR);
+                    alert.setTitle(LocalResources.rb.getString("wrongInput"));
+                    alert.setContentText(LocalResources.rb.getString("mustBeOnOfTypes"));
+                    alert.showAndWait();
+                }
+                else vehicle.setType(type);
+            }
+            vehiclesTable.refresh();
+        });
     }
 
     public void updateTableContent(ObservableList<AppVehicle> vehicles){
         vehiclesTable.setItems(vehicles);
-        vehiclesTable.setEditable(true);
         tableInfoLable.setText(LocalResources.rb.getString("tableInfoShowing")+
                 " "+vehicles.size()+" "+LocalResources.rb.getString("tableInfoVehiclesFrom")+
                 " "+collection.size()+" "+LocalResources.rb.getString("tableInfoInCollection"));
@@ -223,8 +352,130 @@ public class AppController {
     }
 
     public void updateMap(ObservableList<AppVehicle> vehicles){
+        Integer xMax = vehicles.stream().max(Comparator.comparing(AppVehicle::getX)).get().getX();
+        Integer xMin = vehicles.stream().min(Comparator.comparing(AppVehicle::getX)).get().getX();
+        Integer yMax = vehicles.stream().max(Comparator.comparing(AppVehicle::getY)).get().getY();
+        Integer yMin = vehicles.stream().min(Comparator.comparing(AppVehicle::getY)).get().getY();
+        int maxCoord = Math.max(Math.max(Math.abs(xMax), Math.abs(xMin)), Math.max(Math.abs(yMax), Math.abs(yMin)));
 
+        //mapPane.setBackground(new Background(new BackgroundFill(new Paint())));
+        for(AppVehicle vehicle : vehicles){
+            ScaleTransition scale = new ScaleTransition();
+            Node symbol = mapSymbol(vehicle, (int) mapPane.getWidth(), (int) mapPane.getHeight(), maxCoord);
+            scale.setNode(symbol);
+            scale.setDuration(Duration.millis(750));
+            scale.setFromX(0);
+            scale.setFromY(0);
+            scale.setToX(1);
+            scale.setToY(1);
+            scale.play();
+            mapPane.getChildren().add(symbol);
+
+            symbol.setOnMouseEntered(event -> {
+                scale.setFromX(1);
+                scale.setFromY(1);
+                scale.setToX(1.2);
+                scale.setToY(1.2);
+                scale.setDuration(Duration.millis(200));
+                scale.play();
+                mapLabel.setText(LocalResources.rb.getString("mapLabelVehicleID")+" "+vehicle.getId()+
+                        ", "+LocalResources.rb.getString("mapLabelVehicleKey")+" "+vehicle.getKey()+
+                        ", "+LocalResources.rb.getString("mapLabelVehicleName")+" "+vehicle.getName());
+            });
+
+            symbol.setOnMouseExited(event -> {
+                scale.setFromX(1.2);
+                scale.setFromY(1.2);
+                scale.setToX(1);
+                scale.setToY(1);
+                scale.setDuration(Duration.millis(200));
+                scale.play();
+                mapLabel.setText(LocalResources.rb.getString("mapLabelHint"));
+            });
+        }
     }
+
+
+    private Canvas mapSymbol(AppVehicle vehicle, int width, int height, int maxCoord){
+        int canvasSize = 34;
+        int cX = width/2;
+        int cY = height/2;
+        int maxPixels = Math.max((width-canvasSize)/2, (height-canvasSize)/2);
+        double coordToPixel = (double)maxPixels / (double)maxCoord;
+
+        Canvas canvas = new Canvas(34, 34);
+        canvas.setTranslateX(cX + vehicle.getX()*coordToPixel);
+        canvas.setTranslateY(cY + vehicle.getY()*coordToPixel);
+
+        GraphicsContext gc = canvas.getGraphicsContext2D();
+        gc.fill();
+        gc.setStroke(Color.BLACK);
+        gc.setFill(Color.WHITE);
+
+        if (vehicle.getType() == VehicleType.BICYCLE) {
+            gc.strokeOval(2, 10, 10, 10);
+            gc.strokeOval(22, 10, 10, 10);
+            gc.strokeLine(27, 15, 17, 15);
+            gc.strokeLine(17, 15, 9, 6);
+            gc.strokeLine(7, 15, 9, 6);
+            gc.strokeLine(17, 15, 19, 6);
+            gc.strokeLine(27, 15, 18, 8);
+            gc.strokeLine(9, 6, 18, 8);
+        }
+        else if (vehicle.getType() == VehicleType.BOAT) {
+            gc.strokeLine(2, 17, 32, 17);
+            gc.strokeLine(17, 17, 17, 2);
+            gc.strokeLine(17, 2, 25, 14);
+            gc.strokeLine(17, 14, 25, 14);
+            gc.beginPath();
+            gc.moveTo(2, 17);
+            gc.bezierCurveTo(7, 28, 27, 28, 32, 17);
+            gc.stroke();
+            gc.closePath();
+        }
+        else if (vehicle.getType() == VehicleType.HOVERBOARD) {
+            gc.strokeLine(8, 18, 26, 18);
+            gc.beginPath();
+            gc.moveTo(0, 0);
+            gc.strokeArc(4, 8, 10, 10, 270, -60, ArcType.OPEN);
+            gc.strokeArc(22, 8, 10, 10, 270, 60, ArcType.OPEN);
+            gc.closePath();
+        }
+        else if (vehicle.getType() == VehicleType.HELICOPTER) {
+            gc.fillOval(15, 12, 17, 14);
+            gc.strokeOval(15, 12, 17, 14);
+            gc.strokeOval(2, 14, 10, 10);
+            gc.strokeLine(15,19, 7, 19);
+            gc.strokeLine(23, 12, 23, 9);
+            gc.strokeLine(14, 9, 33, 9);
+        }
+        else if (vehicle.getType() == VehicleType.DRONE) {
+            gc.fillOval(12, 12, 10, 10);
+            gc.strokeOval(12, 12, 10, 10);
+            gc.strokeLine(6,17, 12, 17);
+            gc.strokeLine(22,17, 28, 17);
+            gc.strokeLine(6,17, 6, 13);
+            gc.strokeLine(28,17, 28, 13);
+            gc.strokeLine(1,13, 11, 13);
+            gc.strokeLine(23,13, 33, 13);
+        }
+        else {
+            gc.fillOval(7, 7, 20, 20);
+            gc.strokeOval(7, 7, 20, 20);
+        }
+
+
+        canvas.setOnMouseClicked(event -> {
+            for(int i = 0; i < collection.size(); i++){
+                if(Objects.equals(idColumn.getCellData(i), vehicle.getId())){
+                    vehiclesTable.getSelectionModel().select(i, idColumn);
+                }
+            }
+        });
+
+        return canvas;
+    }
+
 
     public void selectedFilterNone(){
         selectedFilterColumn = null;
@@ -283,7 +534,6 @@ public class AppController {
         menuServerRegister.setDisable(!isConnected);
         menuCollectionInfo.setDisable(!isConnected);
         menuCollectionAdd.setDisable(!isConnected);
-        menuCollectionSort.setDisable(!isConnected);
         menuCollectionSumOfWheels.setDisable(!isConnected);
 
         if(isConnected)
